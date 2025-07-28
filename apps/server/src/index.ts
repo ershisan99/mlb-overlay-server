@@ -39,7 +39,6 @@ app.post("/", async (c) => {
   const data = await c.req.json();
   console.log('post received', 'body: ', data);
   
-  // Forward the received data to all connected Socket.IO clients
   io.emit('event', data);
   
   return c.text("OK");
@@ -53,13 +52,6 @@ const io = new Server(httpServer,{  cors: {
   }});
 
 io.on('connection', (socket) => {
-  console.log('it might work OMG');
-
-  socket.emit('hello', 'world');
-  socket.on('hello', (data) => {
-    socket.broadcast.emit('hello', data);
-  });
-
   socket.on('message', (data) => {
     console.log('message received', data);
   });
