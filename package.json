@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "bun run --filter '*' dev",
+    "dev": "bun run --elide-lines 0 --filter '*' dev",
     "build": "bun run --filter '*' build",
     "check-types": "bun run --filter '*' check-types",
     "dev:native": "bun run --filter native dev",
@@ -17,5 +17,8 @@
     "db:generate": "bun run --filter server db:generate",
     "db:migrate": "bun run --filter server db:migrate"
   },
-  "packageManager": "bun@1.2.15"
+  "packageManager": "bun@1.2.15",
+  "dependencies": {
+    "socket.io": "^4.8.1"
+  }
 }

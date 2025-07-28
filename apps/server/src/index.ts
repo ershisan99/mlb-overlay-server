@@ -6,6 +6,8 @@ import { auth } from "./lib/auth";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import * as http from "node:http";
+import { Server } from 'socket.io';
 
 const app = new Hono();
 
@@ -31,6 +33,40 @@ app.use("/trpc/*", trpcServer({
 
 app.get("/", (c) => {
   return c.text("OK");
+});
+
+app.post("/", async (c) => {
+  const data = await c.req.json();
+  console.log('post received', 'body: ', data);
+  
+  // Forward the received data to all connected Socket.IO clients
+  io.emit('event', data);
+  
+  return c.text("OK");
+});
+const httpServer = http.createServer();
+const io = new Server(httpServer,{  cors: {
+    origin: process.env.CORS_ORIGIN || "",
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  }});
+
+io.on('connection', (socket) => {
+  console.log('it might work OMG');
+
+  socket.emit('hello', 'world');
+  socket.on('hello', (data) => {
+    socket.broadcast.emit('hello', data);
+  });
+
+  socket.on('message', (data) => {
+    console.log('message received', data);
+  });
+});
+
+httpServer.listen(4000, () => {
+  console.log('ws listening on *:4000');
 });
 
 export default app;
