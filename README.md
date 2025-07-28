@@ -64,3 +64,49 @@ mlb-overlay-server/
 - `bun check-types`: Check TypeScript types across all apps
 - `bun db:push`: Push schema changes to database
 - `bun db:studio`: Open database studio UI
+
+## Docker
+
+This project includes a Dockerfile to build and run the server application in a containerized environment.
+
+### Building the Docker Image
+
+To build the Docker image, run the following command from the project root:
+
+```bash
+docker build -t mlb-overlay-server .
+```
+
+### Running the Docker Container
+
+To run the Docker container:
+
+```bash
+docker run -p 3000:3000 -p 4000:4000 --env-file ./apps/server/.env mlb-overlay-server
+```
+
+This will:
+- Map port 3000 (API server) from the container to port 3000 on your host machine
+- Map port 4000 (WebSocket server) from the container to port 4000 on your host machine
+- Use the environment variables from your local .env file
+
+### Environment Variables
+
+The Docker container requires the following environment variables:
+
+- `DATABASE_URL`: PostgreSQL connection string
+- `CORS_ORIGIN`: CORS origin setting
+- `BETTER_AUTH_SECRET`: Secret key for authentication
+- `BETTER_AUTH_URL`: URL for authentication service
+
+You can provide these variables in several ways:
+1. Using an env file with `--env-file` as shown above
+2. Setting them directly with `-e` flags:
+   ```bash
+   docker run -p 3000:3000 -p 4000:4000 -e DATABASE_URL=postgres://... -e CORS_ORIGIN=* mlb-overlay-server
+   ```
+3. Creating a custom .env file specifically for Docker
+
+### Docker Compose (Optional)
+
+For a more complete setup, you can create a docker-compose.yml file to manage the application and its dependencies.
